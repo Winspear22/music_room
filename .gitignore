@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+google-services.json
+
+node_modules/
+
+backend/dist/
+mobile/.expo/
+mobile/android/
+mobile/ios/
+mobile/dist/
+*.log
+docs/
