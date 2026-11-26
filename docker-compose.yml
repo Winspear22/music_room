@@ -20,6 +20,8 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - music_room_net
   postgresql:
@@ -44,9 +46,31 @@ services:
       retries: 5
     networks:
       - music_room_net
+  redis:
+    image: redis:8
+    container_name: redis_db
+    restart: unless-stopped
+    env_file: #pas nécéssaire car command gère le mdp, je le laisse pour la structure
+      - path: .env
+        required: true
+    environment: #pas nécéssaire car command gère le mdp, je le laisse pour la structure
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:${REDIS_HOST_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"${REDIS_PASSWORD}\" redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - music_room_net
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   music_room_net:
