@@ -6,13 +6,11 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/11/25 10:13:11 by adnen             #+#    #+#              #
-#    Updated: 2026/11/25 14:50:00 by adnen            ###   ########.fr        #
+#    Updated: 2026/11/27 00:45:51 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
-
-.PHONY: all up dev down stop logs ps shell test lint build clean fclean re
 
 all: up
 
@@ -53,3 +51,11 @@ fclean:
 	$(COMPOSE) down -v --rmi local --remove-orphans
 
 re: fclean up
+
+db-shell:
+	$(COMPOSE) exec postgresql sh -c 'psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+
+redis-cli:
+	@sh -c 'set -a && . ./.env && set +a && $(COMPOSE) exec redis redis-cli -a "$$REDIS_PASSWORD"'
+
+.PHONY: all up dev down stop logs ps shell db-shell redis-cli test lint build clean fclean re
