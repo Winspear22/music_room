@@ -6,6 +6,7 @@ import databaseConfig from './config/database.config.js';
 import mailConfig from './config/mail.config.js';
 import redisConfig from './config/redis.config.js';
 import { envValidationSchema } from './config/env.validation.js';
+import { DatabaseModule } from './database/database.module.js';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { envValidationSchema } from './config/env.validation.js';
       load: [databaseConfig, redisConfig, mailConfig],
       validationSchema: envValidationSchema,
     }),
+    DatabaseModule
   ],
   controllers: [AppController],
   providers: [AppService],
